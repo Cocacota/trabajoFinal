@@ -2,34 +2,38 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Pressable,Alert } from "react-native";
 import { Link, useRouter } from "expo-router";
-import { fakeUsers } from "@/components/fakerUser";
+import { loginUser } from "@/src/api/usuarios";
 export default function LoginScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
+  const [form, setForm] = useState({
+    email:"",
+    password:""
+  });
+  const handleChange = (key: string, value: string) => {
+    setForm({ ...form, [key]: value });
+  };
   
- const onLogin = async () => {
+  const handleLogin = async () => {
+    if (!form.email || !form.password) {
+      Alert.alert("Error", "Por favor ingresa tu email y contraseña.");
+      return;
+    }
+
     try {
-      const response = await fetch("http://10.0.2.2:4000/login", {
-        // ⚠️ En Android Emulator usa 10.0.2.2 en lugar de localhost
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const result = await loginUser(form);
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        Alert.alert("Bienvenido", `Hola ${data.user.name} 👋`);
-        router.replace("/");
+      if (result.message?.includes("✅")) {
+        Alert.alert("Bienvenido", `Hola ${result.user.nombre} 👋`);
+        // Navegar al Home o Dashboard
+        router.navigate("/")
       } else {
-        Alert.alert("Error", data.message || "Credenciales inválidas");
+        Alert.alert("Error", result.message || "Credenciales incorrectas");
       }
     } catch (error) {
       Alert.alert("Error", "No se pudo conectar con el servidor");
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -38,8 +42,8 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Correo electrónico"
-        value={email}
-        onChangeText={setEmail}
+        value={form.email}
+       onChangeText={(Text)=> handleChange("email",Text)}
         autoCapitalize="none"
         keyboardType="email-address"
       />
@@ -47,13 +51,13 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
-        value={password}
-        onChangeText={setPassword}
+        value={form.password}
+        onChangeText={(Text)=> handleChange("password",Text)}
         
         secureTextEntry
       />
 
-      <Pressable style={styles.button} onPress={onLogin}>
+      <Pressable style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
       </Pressable>
       <Link href={"/register"} asChild>

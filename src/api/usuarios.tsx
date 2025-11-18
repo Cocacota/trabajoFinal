@@ -5,7 +5,7 @@ import { API_URL } from "./config";
 // 👆 reemplaza 192.168.x.x por la IP local de tu PC
 // puedes obtenerla con "ipconfig" en Windows o "ifconfig" en mac/linux
 
-export const registerUser = async (data) => {
+export const registerUser = async (data: { nombre: string; apellido: string; email: string; password: string; telefono: string; direccion: string; }) => {
   try {
     const response = await fetch(`${API_URL}/usuario/register`, {
       method: "POST",
@@ -22,7 +22,7 @@ export const registerUser = async (data) => {
 };
 
 
-export const loginUser = async (data) => {
+export const loginUser = async (data: { email: string; password: string; }) => {
   try {
     const response = await fetch(`${API_URL}/usuario/login`, {
       method: "POST",

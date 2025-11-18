@@ -1,36 +1,30 @@
 // app/login.tsx
-import React, { useState } from "react";
+import React, { useState ,useContext} from "react";
 import { View, Text, TextInput, StyleSheet, Pressable,Alert } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { loginUser } from "@/src/api/usuarios";
+import { AuthContext } from "@/components/contexto/contex-usuario";
 export default function LoginScreen() {
+  const { login } = useContext(AuthContext);
   const router = useRouter();
   const [form, setForm] = useState({
     email:"",
     password:""
   });
+  const [loading, setLoading] = useState(false);
   const handleChange = (key: string, value: string) => {
     setForm({ ...form, [key]: value });
   };
   
   const handleLogin = async () => {
-    if (!form.email || !form.password) {
-      Alert.alert("Error", "Por favor ingresa tu email y contraseña.");
-      return;
-    }
-
+    setLoading(true);
     try {
-      const result = await loginUser(form);
-
-      if (result.message?.includes("✅")) {
-        Alert.alert("Bienvenido", `Hola ${result.user.nombre} 👋`);
-        // Navegar al Home o Dashboard
-        router.navigate("/")
-      } else {
-        Alert.alert("Error", result.message || "Credenciales incorrectas");
-      }
-    } catch (error) {
-      Alert.alert("Error", "No se pudo conectar con el servidor");
+      await login(form.email,form.password);
+      router.replace("/");
+    } catch {
+      Alert.alert("Error", "Credenciales incorrectas o servidor no disponible.");
+    } finally {
+      setLoading(false);
     }
   };
   

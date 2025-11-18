@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput,  StyleSheet, Pressable,Alert } from "react-native";
 import { Link, useRouter } from "expo-router";
-import {registerUser} from "../src/api/usuarios.js"
+import {registerUser} from "../src/api/usuarios"
 
 export default function RegisterScreen(){
     const router = useRouter();
@@ -17,9 +17,12 @@ export default function RegisterScreen(){
     setForm({ ...form, [key]: value });
   };
   const handleRegister = async () => {
+    Alert.alert("procede","los campos completados correctamente");
     if (!form.nombre || !form.apellido || !form.email || !form.password) {
       Alert.alert("Error", "Por favor completa todos los campos obligatorios.");
-      return;
+     return;
+    
+      
     }try {
       const result = await registerUser(form);
 

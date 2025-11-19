@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 
-export default function ProductModal({ visible, product, onClose }) {
+export default function ProductModal({ visible , product, onClose }) {
   if (!product) return null;
 
   return (
